@@ -13,21 +13,25 @@ library(shiny)
 shinyUI(fluidPage(
   
   # Application title
-  titlePanel("Old Faithful Geyser Data"),
+  titlePanel("censusVis"),
   
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
-       sliderInput("bins",
-                   "Number of bins:",
-                   min = 1,
-                   max = 50,
-                   value = 30)
+         helpText("Create demographic maps with information from 2010 US Census."),
+       selectInput("var",
+                   label = "Choose a variable to display",
+                   choices = c("Percent White","Percent Black",
+                               "Percent Hispanic","Percent Asian"),
+                   selected = "Percent White"),
+       sliderInput("range",
+                   label = "Range of interest:",
+                   min = 0,max = 100, value = c(0,100))
     ),
     
     # Show a plot of the generated distribution
     mainPanel(
-       plotOutput("distPlot")
+       plotOutput("map")
     )
   )
 ))

@@ -7,20 +7,37 @@
 #    http://shiny.rstudio.com/
 #
 
-library(shiny)
+library(maps)
+library(mapproj)
+counties <- readRDS("data/counties.rds")
+source("helpers.R")
 
-# Define server logic required to draw a histogram
-shinyServer(function(input, output) {
-   
-  output$distPlot <- renderPlot({
-    
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2] 
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    
-    # draw the histogram with the specified number of bins
-    hist(x, breaks = bins, col = 'darkgray', border = 'white')
-    
-  })
-  
-})
+shinyServer(
+     function(input, output) {
+          output$map <- renderPlot({
+               data <- switch(input$var, 
+                              "Percent White" = counties$white,
+                              "Percent Black" = counties$black,
+                              "Percent Hispanic" = counties$hispanic,
+                              "Percent Asian" = counties$asian)
+               
+               color <- switch(input$var, 
+                               "Percent White" = "darkgreen",
+                               "Percent Black" = "black",
+                               "Percent Hispanic" = "darkorange",
+                               "Percent Asian" = "darkviolet")
+               
+               legend <- switch(input$var, 
+                                "Percent White" = "% White",
+                                "Percent Black" = "% Black",
+                                "Percent Hispanic" = "% Hispanic",
+                                "Percent Asian" = "% Asian")
+               
+               percent_map(var = data, 
+                           color = color, 
+                           legend.title = legend, 
+                           max = input$range[2], 
+                           min = input$range[1])
+          })
+     }
+)
